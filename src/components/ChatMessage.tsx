@@ -16,10 +16,10 @@ export const ChatMessage = ({ content, timestamp, isOwn = false }: ChatMessagePr
     >
       <div
         className={cn(
-          "max-w-[70%] rounded-2xl px-4 py-2",
+          "max-w-[70%] rounded-2xl px-4 py-2 backdrop-blur-sm",
           isOwn
-            ? "bg-primary text-white rounded-br-none"
-            : "bg-gray-100 text-gray-800 rounded-bl-none"
+            ? "bg-primary/80 text-white rounded-br-none"
+            : "bg-white/80 text-gray-800 rounded-bl-none"
         )}
       >
         <p className="text-sm">{content}</p>

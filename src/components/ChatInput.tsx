@@ -17,26 +17,26 @@ export const ChatInput = ({ onSendMessage }: ChatInputProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="border-t border-gray-200 p-4 bg-white">
+    <form onSubmit={handleSubmit} className="border-t border-white/20 p-4 backdrop-blur-sm bg-white/10">
       <div className="flex items-center space-x-2">
         <button
           type="button"
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
         >
-          <Paperclip className="w-5 h-5 text-gray-500" />
+          <Paperclip className="w-5 h-5" />
         </button>
         <input
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 p-2 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
+          className="flex-1 p-2 bg-white/20 text-white placeholder-white/60 rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
         />
         <button
           type="button"
-          className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+          className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
         >
-          <Smile className="w-5 h-5 text-gray-500" />
+          <Smile className="w-5 h-5" />
         </button>
         <button
           type="submit"
