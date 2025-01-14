@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Send, Paperclip, Smile } from "lucide-react";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
+  onFileSelect: (file: File) => void;
 }
 
-export const ChatInput = ({ onSendMessage }: ChatInputProps) => {
+export const ChatInput = ({ onSendMessage, onFileSelect }: ChatInputProps) => {
   const [message, setMessage] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,11 +18,33 @@ export const ChatInput = ({ onSendMessage }: ChatInputProps) => {
     }
   };
 
+  const handleFileClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onFileSelect(file);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="border-t border-white/20 p-4 backdrop-blur-sm bg-white/10">
       <div className="flex items-center space-x-2">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          className="hidden"
+          accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
+        />
         <button
           type="button"
+          onClick={handleFileClick}
           className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
         >
           <Paperclip className="w-5 h-5" />

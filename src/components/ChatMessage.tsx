@@ -22,7 +22,10 @@ export const ChatMessage = ({ content, timestamp, isOwn = false }: ChatMessagePr
             : "bg-white/80 text-gray-800 rounded-bl-none"
         )}
       >
-        <p className="text-sm">{content}</p>
+        <div 
+          className="text-sm"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
         <span
           className={cn(
             "text-xs mt-1 block",
