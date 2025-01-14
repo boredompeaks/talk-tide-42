@@ -2,98 +2,96 @@ import { useState, useEffect } from "react";
 import { ChatSidebar } from "@/components/ChatSidebar";
 import { ChatMessage } from "@/components/ChatMessage";
 import { ChatInput } from "@/components/ChatInput";
-import { Button } from "@/components/ui/button";
-import { LogIn, UserPlus } from "lucide-react";
+import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 1,
-      content: "Hey! How are you?",
+      content: "Welcome to the chat! 👋",
       timestamp: "12:30",
-      isOwn: false,
-    },
-    {
-      id: 2,
-      content: "I'm good, thanks! How about you?",
-      timestamp: "12:31",
-      isOwn: true,
-    },
-    {
-      id: 3,
-      content: "Great! Just working on some new features.",
-      timestamp: "12:32",
       isOwn: false,
     },
   ]);
 
   const navigate = useNavigate();
 
-  // Check for authentication
-  useEffect(() => {
-    const isAuthenticated = localStorage.getItem("isAuthenticated");
-    if (!isAuthenticated) {
-      navigate("/login");
-    }
-  }, [navigate]);
+  const handleLogout = () => {
+    localStorage.removeItem("isAuthenticated");
+    navigate("/login");
+    toast.success("Logged out successfully");
+  };
 
   const handleSendMessage = (content: string) => {
     const newMessage = {
       id: messages.length + 1,
       content,
-      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      timestamp: new Date().toLocaleTimeString([], { 
+        hour: "2-digit", 
+        minute: "2-digit" 
+      }),
       isOwn: true,
     };
     setMessages([...messages, newMessage]);
   };
 
-  const handleFileUpload = (file: File) => {
+  const handleFileUpload = async (file: File) => {
     if (file) {
-      // Create object URL for preview
-      const objectUrl = URL.createObjectURL(file);
-      
-      // Add file message
-      const newMessage = {
-        id: messages.length + 1,
-        content: file.type.startsWith('image') 
-          ? `<img src="${objectUrl}" alt="uploaded" class="max-w-xs rounded-lg" />`
-          : `File: ${file.name}`,
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-        isOwn: true,
-      };
-      
-      setMessages([...messages, newMessage]);
-      toast.success("File uploaded successfully!");
+      try {
+        // In a real app, you would upload to a server here
+        const objectUrl = URL.createObjectURL(file);
+        
+        let content = "";
+        if (file.type.startsWith("image")) {
+          content = `<img src="${objectUrl}" alt="uploaded" class="max-w-xs rounded-lg" />`;
+        } else {
+          content = `<div class="flex items-center space-x-2 p-2 bg-white/10 rounded-lg">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path>
+              <polyline points="13 2 13 9 20 9"></polyline>
+            </svg>
+            <span>${file.name}</span>
+          </div>`;
+        }
+        
+        const newMessage = {
+          id: messages.length + 1,
+          content,
+          timestamp: new Date().toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+          }),
+          isOwn: true,
+        };
+        
+        setMessages([...messages, newMessage]);
+        toast.success("File uploaded successfully!");
+      } catch (error) {
+        toast.error("Failed to upload file");
+      }
     }
   };
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-blue-900 to-blue-700 overflow-hidden">
       <div 
-        className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05')] 
+        className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5')] 
         bg-cover bg-center bg-no-repeat"
         style={{ filter: 'brightness(0.6)' }}
       />
       
-      <div className="absolute top-4 right-4 flex gap-2 z-10">
+      <div className="absolute top-4 right-4 z-10">
         <Button 
           variant="ghost" 
           className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white"
-          onClick={() => navigate('/login')}
+          onClick={handleLogout}
         >
-          <LogIn className="mr-2 h-4 w-4" />
-          Login
-        </Button>
-        <Button 
-          variant="ghost" 
-          className="bg-white/20 backdrop-blur-sm hover:bg-white/30 text-white"
-          onClick={() => navigate('/register')}
-        >
-          <UserPlus className="mr-2 h-4 w-4" />
-          Register
+          <LogOut className="mr-2 h-4 w-4" />
+          Logout
         </Button>
       </div>
 

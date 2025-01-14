@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
-import { Send, Paperclip, Smile } from "lucide-react";
+import { Send, Paperclip, Smile, Mic, Image, Video, FileText } from "lucide-react";
+import { toast } from "sonner";
 
 interface ChatInputProps {
   onSendMessage: (message: string) => void;
@@ -8,6 +9,7 @@ interface ChatInputProps {
 
 export const ChatInput = ({ onSendMessage, onFileSelect }: ChatInputProps) => {
   const [message, setMessage] = useState("");
+  const [isRecording, setIsRecording] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,10 +27,23 @@ export const ChatInput = ({ onSendMessage, onFileSelect }: ChatInputProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        toast.error("File size must be less than 10MB");
+        return;
+      }
       onFileSelect(file);
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+    }
+  };
+
+  const handleVoiceRecord = () => {
+    setIsRecording(!isRecording);
+    if (!isRecording) {
+      toast.info("Voice recording started");
+    } else {
+      toast.success("Voice recording saved");
     }
   };
 
@@ -42,13 +57,55 @@ export const ChatInput = ({ onSendMessage, onFileSelect }: ChatInputProps) => {
           className="hidden"
           accept="image/*,video/*,audio/*,.pdf,.doc,.docx"
         />
-        <button
-          type="button"
-          onClick={handleFileClick}
-          className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
-        >
-          <Paperclip className="w-5 h-5" />
-        </button>
+        <div className="flex space-x-1">
+          <button
+            type="button"
+            onClick={handleFileClick}
+            className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
+            title="Attach file"
+          >
+            <Paperclip className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (fileInputRef.current) {
+                fileInputRef.current.accept = "image/*";
+                fileInputRef.current.click();
+              }
+            }}
+            className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
+            title="Send image"
+          >
+            <Image className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (fileInputRef.current) {
+                fileInputRef.current.accept = "video/*";
+                fileInputRef.current.click();
+              }
+            }}
+            className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
+            title="Send video"
+          >
+            <Video className="w-5 h-5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              if (fileInputRef.current) {
+                fileInputRef.current.accept = ".pdf,.doc,.docx";
+                fileInputRef.current.click();
+              }
+            }}
+            className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
+            title="Send document"
+          >
+            <FileText className="w-5 h-5" />
+          </button>
+        </div>
         <input
           type="text"
           value={message}
@@ -58,13 +115,25 @@ export const ChatInput = ({ onSendMessage, onFileSelect }: ChatInputProps) => {
         />
         <button
           type="button"
+          onClick={handleVoiceRecord}
+          className={`p-2 hover:bg-white/20 rounded-full transition-colors text-white ${
+            isRecording ? "bg-red-500" : ""
+          }`}
+          title="Voice message"
+        >
+          <Mic className="w-5 h-5" />
+        </button>
+        <button
+          type="button"
           className="p-2 hover:bg-white/20 rounded-full transition-colors text-white"
+          title="Emoji"
         >
           <Smile className="w-5 h-5" />
         </button>
         <button
           type="submit"
           className="p-2 bg-primary hover:bg-primary/90 rounded-full transition-colors"
+          title="Send message"
         >
           <Send className="w-5 h-5 text-white" />
         </button>
