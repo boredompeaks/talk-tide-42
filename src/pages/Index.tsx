@@ -39,19 +39,17 @@ const Index = () => {
   });
 
   const sendMessageMutation = useMutation({
-    mutationFn: async ({ content, attachmentUrl, attachmentType }: { 
+    mutationFn: async ({ content, mediaUrl, mediaType }: { 
       content: string;
-      attachmentUrl?: string;
-      attachmentType?: 'image' | 'video' | 'document' | 'audio';
+      mediaUrl?: string;
+      mediaType?: 'image' | 'video' | 'document' | 'audio';
     }) => {
-      if (!session?.user || !currentConversationId) return;
+      if (!session?.user) return;
       
       const { error } = await supabase.from('messages').insert({
         content,
-        user_id: session.user.id,
-        conversation_id: currentConversationId,
-        attachment_url: attachmentUrl,
-        attachment_type: attachmentType,
+        sender_id: session.user.id,
+        media_url: mediaUrl
       });
 
       if (error) throw error;
@@ -89,7 +87,7 @@ const Index = () => {
     onSuccess: (publicUrl, file) => {
       if (!publicUrl) return;
 
-      const attachmentType = file.type.startsWith('image/')
+      const mediaType = file.type.startsWith('image/')
         ? 'image'
         : file.type.startsWith('video/')
         ? 'video'
@@ -99,8 +97,8 @@ const Index = () => {
 
       sendMessageMutation.mutate({
         content: file.name,
-        attachmentUrl: publicUrl,
-        attachmentType,
+        mediaUrl: publicUrl,
+        mediaType,
       });
     },
     onError: (error) => {
@@ -184,9 +182,9 @@ const Index = () => {
                   hour: "2-digit",
                   minute: "2-digit"
                 })}
-                isOwn={message.user_id === session?.user?.id}
-                attachmentUrl={message.attachment_url}
-                attachmentType={message.attachment_type}
+                isOwn={message.sender_id === session?.user?.id}
+                attachmentUrl={message.media_url}
+                attachmentType={message.media_url ? 'image' : undefined}
               />
             ))}
           </div>
