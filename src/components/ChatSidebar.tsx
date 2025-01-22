@@ -12,9 +12,9 @@ export const ChatSidebar = ({ isCollapsed, onToggle, onSelectConversation }: Cha
   const [searchQuery, setSearchQuery] = useState("");
 
   const contacts = [
-    { id: 1, name: "Alice Smith", status: "online", lastMessage: "Hey there!" },
-    { id: 2, name: "Bob Johnson", status: "offline", lastMessage: "See you tomorrow" },
-    { id: 3, name: "Carol White", status: "online", lastMessage: "Thanks!" },
+    { id: "1", name: "Alice Smith", status: "online", lastMessage: "Hey there!" },
+    { id: "2", name: "Bob Johnson", status: "offline", lastMessage: "See you tomorrow" },
+    { id: "3", name: "Carol White", status: "online", lastMessage: "Thanks!" },
   ];
 
   return (
@@ -52,7 +52,7 @@ export const ChatSidebar = ({ isCollapsed, onToggle, onSelectConversation }: Cha
           <div
             key={contact.id}
             className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
-            onClick={() => onSelectConversation(String(contact.id))}
+            onClick={() => onSelectConversation(contact.id)}
           >
             {isCollapsed ? (
               <div className="flex justify-center">
