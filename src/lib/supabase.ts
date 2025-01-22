@@ -1,10 +1,10 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = 'https://your-project-url.supabase.co';
-const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseKey) {
-  throw new Error('Missing VITE_SUPABASE_ANON_KEY - Please connect your project to Supabase from the menu');
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('Missing Supabase configuration - Please check your connection to Supabase');
 }
 
 export const supabase = createClient(supabaseUrl, supabaseKey);
