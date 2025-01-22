@@ -1,13 +1,14 @@
-import { useState } from "react";
+import { useState, Dispatch, SetStateAction } from "react";
 import { Search, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ChatSidebarProps {
   isCollapsed: boolean;
   onToggle: () => void;
+  onSelectConversation: Dispatch<SetStateAction<string | null>>;
 }
 
-export const ChatSidebar = ({ isCollapsed, onToggle }: ChatSidebarProps) => {
+export const ChatSidebar = ({ isCollapsed, onToggle, onSelectConversation }: ChatSidebarProps) => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const contacts = [
@@ -51,6 +52,7 @@ export const ChatSidebar = ({ isCollapsed, onToggle }: ChatSidebarProps) => {
           <div
             key={contact.id}
             className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
+            onClick={() => onSelectConversation(String(contact.id))}
           >
             {isCollapsed ? (
               <div className="flex justify-center">
