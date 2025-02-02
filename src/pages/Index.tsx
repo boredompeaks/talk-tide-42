@@ -42,9 +42,24 @@ const Index = () => {
     }) => {
       if (!session?.user) return;
       
+      // For now, we'll use a default receiver_id (first user that's not the sender)
+      const { data: users } = await supabase
+        .from('users')
+        .select('id')
+        .neq('id', session.user.id)
+        .limit(1)
+        .single();
+
+      const receiver_id = users?.id;
+      
+      if (!receiver_id) {
+        throw new Error('No receiver found');
+      }
+
       const { error } = await supabase.from('messages').insert({
         content,
         sender_id: session.user.id,
+        receiver_id,
         media_url: mediaUrl
       });
 

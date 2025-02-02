@@ -29,11 +29,6 @@ const Register = () => {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email,
         password,
-        options: {
-          data: {
-            username,
-          },
-        },
       });
 
       if (authError) {
@@ -42,16 +37,16 @@ const Register = () => {
       }
 
       if (authData.user) {
-        // Create profile entry
-        const { error: profileError } = await supabase.from('profiles').insert({
-          user_id: authData.user.id,
-          username,
+        // Create user entry
+        const { error: userError } = await supabase.from('users').insert({
+          id: authData.user.id,
           email,
+          full_name: username,
         });
 
-        if (profileError) {
-          console.error("Profile creation error:", profileError);
-          toast.error("Error creating profile");
+        if (userError) {
+          console.error("User creation error:", userError);
+          toast.error("Error creating user profile");
           return;
         }
 
