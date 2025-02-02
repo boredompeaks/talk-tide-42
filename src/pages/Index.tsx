@@ -11,7 +11,6 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 
 const Index = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const [currentConversationId, setCurrentConversationId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const { data: session } = useQuery({
@@ -23,26 +22,22 @@ const Index = () => {
   });
 
   const { data: messages = [], refetch: refetchMessages } = useQuery({
-    queryKey: ['messages', currentConversationId],
+    queryKey: ['messages'],
     queryFn: async () => {
-      if (!currentConversationId) return [];
       const { data, error } = await supabase
         .from('messages')
         .select('*')
-        .eq('conversation_id', currentConversationId)
         .order('created_at', { ascending: true });
       
       if (error) throw error;
       return data;
     },
-    enabled: !!currentConversationId,
   });
 
   const sendMessageMutation = useMutation({
-    mutationFn: async ({ content, mediaUrl, mediaType }: { 
+    mutationFn: async ({ content, mediaUrl }: { 
       content: string;
       mediaUrl?: string;
-      mediaType?: 'image' | 'video' | 'document' | 'audio';
     }) => {
       if (!session?.user) return;
       
@@ -86,19 +81,9 @@ const Index = () => {
     },
     onSuccess: (publicUrl, file) => {
       if (!publicUrl) return;
-
-      const mediaType = file.type.startsWith('image/')
-        ? 'image'
-        : file.type.startsWith('video/')
-        ? 'video'
-        : file.type.startsWith('audio/')
-        ? 'audio'
-        : 'document';
-
       sendMessageMutation.mutate({
         content: file.name,
         mediaUrl: publicUrl,
-        mediaType,
       });
     },
     onError: (error) => {
@@ -124,17 +109,14 @@ const Index = () => {
 
   // Set up real-time subscription
   useEffect(() => {
-    if (!currentConversationId) return;
-
     const channel = supabase
-      .channel(`messages:${currentConversationId}`)
+      .channel('messages')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
           table: 'messages',
-          filter: `conversation_id=eq.${currentConversationId}`,
         },
         () => {
           refetchMessages();
@@ -145,7 +127,7 @@ const Index = () => {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [currentConversationId]);
+  }, []);
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-blue-900 to-blue-700 overflow-hidden">
@@ -170,7 +152,6 @@ const Index = () => {
         <ChatSidebar 
           isCollapsed={isCollapsed} 
           onToggle={() => setIsCollapsed(!isCollapsed)}
-          onSelectConversation={setCurrentConversationId}
         />
         <div className="flex-1 flex flex-col backdrop-blur-md bg-white/30">
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
