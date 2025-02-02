@@ -11,6 +11,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 
 const Index = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const { data: session } = useQuery({
@@ -152,6 +153,7 @@ const Index = () => {
         <ChatSidebar 
           isCollapsed={isCollapsed} 
           onToggle={() => setIsCollapsed(!isCollapsed)}
+          onSelectConversation={setSelectedConversation}
         />
         <div className="flex-1 flex flex-col backdrop-blur-md bg-white/30">
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
