@@ -9,92 +9,84 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      media_files: {
-        Row: {
-          created_at: string | null
-          file_path: string
-          file_size: number
-          file_type: string
-          id: string
-          message_id: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          file_path: string
-          file_size: number
-          file_type: string
-          id?: string
-          message_id?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          file_path?: string
-          file_size?: number
-          file_type?: string
-          id?: string
-          message_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "media_files_message_id_fkey"
-            columns: ["message_id"]
-            isOneToOne: false
-            referencedRelation: "messages"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       messages: {
         Row: {
           content: string
           created_at: string | null
-          deleted_at: string | null
+          expires_at: string | null
           id: string
           is_read: boolean | null
           media_url: string | null
+          receiver_id: string
           sender_id: string
+          type: string
         }
         Insert: {
           content: string
           created_at?: string | null
-          deleted_at?: string | null
+          expires_at?: string | null
           id?: string
           is_read?: boolean | null
           media_url?: string | null
+          receiver_id: string
           sender_id: string
+          type?: string
         }
         Update: {
           content?: string
           created_at?: string | null
-          deleted_at?: string | null
+          expires_at?: string | null
           id?: string
           is_read?: boolean | null
           media_url?: string | null
+          receiver_id?: string
           sender_id?: string
+          type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "messages_receiver_id_fkey"
+            columns: ["receiver_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "messages_sender_id_fkey"
+            columns: ["sender_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
-      profiles: {
+      users: {
         Row: {
+          avatar_url: string | null
           created_at: string | null
           email: string
+          full_name: string
           id: string
-          user_id: string
-          username: string
+          last_seen: string | null
+          status: string
         }
         Insert: {
+          avatar_url?: string | null
           created_at?: string | null
           email: string
+          full_name: string
           id?: string
-          user_id: string
-          username: string
+          last_seen?: string | null
+          status?: string
         }
         Update: {
+          avatar_url?: string | null
           created_at?: string | null
           email?: string
+          full_name?: string
           id?: string
-          user_id?: string
-          username?: string
+          last_seen?: string | null
+          status?: string
         }
         Relationships: []
       }
